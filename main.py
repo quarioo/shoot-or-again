@@ -1,142 +1,66 @@
 import sys
 
 import pygame
-import random
-import time
 
+from pygame.locals import *
 
-def game():
-    pygame.init()
-    pygame.display.set_caption("shot or again")
-    size = width, height = 1550, 840
-    screen = pygame.display.set_mode(size)
+from start_menu import Button
 
-
-    running = True
-
-    fps = 60
-    clock = pygame.time.Clock()
-    pos_vil = random.randrange(1, 7)
-    while running:
-        tic = time.perf_counter()
-        if time.perf_counter() - tic > 1:
-            running = False
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    if pos_vil == 1:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                elif event.key == pygame.K_w:
-                    if pos_vil == 2:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                elif event.key == pygame.K_e:
-                    if pos_vil == 3:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                elif event.key == pygame.K_i:
-                    if pos_vil == 4:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                elif event.key == pygame.K_o:
-                    if pos_vil == 5:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                elif event.key == pygame.K_p:
-                    if pos_vil == 6:
-                        pos_vil = random.randrange(1, 7)
-                    else:
-                        pos_vil = random.randrange(1, 7)
-                else:
-                    pos_vil = random.randrange(1, 7)
-
-        screen.fill((0, 0, 0))
-        clock.tick(fps)
-        pygame.display.flip()
-    pygame.quit()
-
-
+FPS = 60
+RUNNING = True
 pygame.init()
-fps = 60
-fpsClock = pygame.time.Clock()
-width, height = 600, 200
-screen = pygame.display.set_mode((width, height))
-
-font = pygame.font.SysFont('Arial', 40)
-
-objects = []
 
 
-class Button():
-    def __init__(self, x, y, width, height, buttonText='Button', onclickFunction=None, onePress=False):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.onclickFunction = onclickFunction
-        self.onePress = onePress
+class Game:
+    def __init__(self):
+        pygame.display.set_caption('Shoot or again?')
 
-        self.fillColors = {
-            'normal': '#ffffff',
-            'hover': '#666666',
-            'pressed': '#333333',
-        }
+        self.clock = pygame.time.Clock()
 
-        self.buttonSurface = pygame.Surface((self.width, self.height))
-        self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
+        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
-        self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
+        self.screen = pygame.display.set_mode((1920, 1080))
+        self.width, self.height = self.screen.get_width(), self.screen.get_height()
 
-        self.alreadyPressed = False
+        self.font = pygame.font.Font('./fonts/ZenDots-Regular.ttf', 40)
+        start_text = self.font.render('REGISTRATION', True, 'Blue')
 
-        objects.append(self)
+        self.objects = []
 
-    def process(self):
+        start_button = Button(
+            self, 'Start', 200, 40, (self.width / 2 - 200 / 2, self.height - 40 / 2), 5
+        )
+        self.objects.append(start_button)
 
-        mousePos = pygame.mouse.get_pos()
+        while RUNNING:
+            self.loop()
+            self.clock.tick(FPS)
 
-        self.buttonSurface.fill(self.fillColors['normal'])
-        if self.buttonRect.collidepoint(mousePos):
-            self.buttonSurface.fill(self.fillColors['hover'])
+    def loop(self):
+        """Main game loop"""
+        self.eventLoop()
 
-            if pygame.mouse.get_pressed(num_buttons=3)[0]:
-                self.buttonSurface.fill(self.fillColors['pressed'])
+        self.tick()
+        self.draw()
+        pygame.display.update()
 
-                if self.onePress:
-                    self.onclickFunction()
+    def eventLoop(self):
+        """The main event loop, detects keypresses"""
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                pass
 
-                elif not self.alreadyPressed:
-                    self.onclickFunction()
-                    self.alreadyPressed = True
+    def tick(self):
+        self.time = self.clock.tick()
+        self.keys_pressed = pygame.key.get_pressed()
 
-            else:
-                self.alreadyPressed = False
+    def draw(self):
+        for game_object in self.objects:
+            game_object.draw()
 
-        self.buttonSurface.blit(self.buttonSurf, [
-            self.buttonRect.width / 2 - self.buttonSurf.get_rect().width / 2,
-            self.buttonRect.height / 2 - self.buttonSurf.get_rect().height / 2
-        ])
-        screen.blit(self.buttonSurface, self.buttonRect)
 
-customButton = Button(100, 50, 400, 100, 'НАЧАТЬ', game)
-
-while True:
-    screen.fill((0, 0, 0))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    for object in objects:
-        object.process()
-
-    pygame.display.flip()
-    fpsClock.tick(fps)
+if __name__ == '__main__':
+    Game()
