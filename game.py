@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Tuple
 
 import pygame
 
@@ -8,7 +9,7 @@ class Game:
     def __init__(self, main):
         self.main = main
 
-    def load_image(self, name, colorkey=None):
+    def load_image(self, name, colorkey: Tuple[int, int] = None) -> pygame.image:
         """Берет изображения для спрайтов и картинок"""
         if not os.path.isfile(name):
             print(f"Файл с изображением '{name}' не найден")
@@ -19,10 +20,10 @@ class Game:
 
         return image
 
-    def make_image_transparency(self, image, colorkey=None):
+    def make_image_transparency(self, image, colorkey: Tuple[int, int] = None) -> pygame.image:
         """
         Функция сделает цвет colorkey прозрачным на всей картинке.
-        Если colorkey не задан, то  цвет левого верхнего угла
+        Если colorkey не задан, то используется цвет левого верхнего угла
         """
         if colorkey is not None:
             image = image.convert()
